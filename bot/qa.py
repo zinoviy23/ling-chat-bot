@@ -8,7 +8,7 @@ class Module:
 
 
 
-    def Request(self, step, event, module_num):
+    def Request(self, step, event, module_num, vk_session):
 
         def add_url(ans):
             if ans == 'Про Вышку':
@@ -74,9 +74,9 @@ class Module:
             url = 'https://www.hse.ru/pochemuchnik2018/'
             url += add_url(event.obj.text)
 
-            return url, keyboard
+            return url, keyboard, None
 
         else:
 
-            return "Выберите раздел", keyboard
+            return "Выберите раздел", keyboard, None
 

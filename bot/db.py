@@ -192,3 +192,139 @@ class Document:
             logging.error("cannot execute " + str(self) +
                           ' because ' + str(error))
 
+
+class Step:
+    def __init__(self, vk_id: int):
+        self.vk_id = vk_id
+
+    def set(self, step) -> None:
+        try:
+            connection.execute("""
+            delete from Step where UserID=?
+            """, (self.vk_id,))
+
+            connection.execute("""
+            insert into Step(UserID, StepNum) values (?, ?)
+            """, (self.vk_id, step))
+
+            connection.commit()
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+
+    def get(self) -> int:
+        try:
+            step = connection.execute("""
+            select StepNum from Step where UserID=?
+            """, (self.vk_id,)).fetchone()
+
+            if step is None:
+                return 0
+            else:
+                return step[1]
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+
+        return 0
+
+    def set_info(self, info):
+        try:
+            connection.execute("""
+            update Step set Info=? where UserID=?
+            """, (info, self.vk_id))
+
+            connection.commit()
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+
+    def get_info(self) -> str:
+        try:
+            step = connection.execute("""
+            select Info from Step where UserID=?
+            """, (self.vk_id,)).fetchone()
+
+            if step is None:
+                return ""
+            else:
+                return step[1]
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+
+        return ""
+
+    def get_module(self) -> int:
+        try:
+            step = connection.execute("""
+            select ModuleNum from Step where UserID=?
+            """, (self.vk_id,)).fetchone()
+
+            if step is None:
+                return -1
+            else:
+                return step[1]
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+
+        return -1
+
+    def set_module(self, module_num):
+        try:
+            connection.execute("""
+            update Step set ModuleNum=? where UserID=?
+            """, (module_num, self.vk_id))
+
+            connection.commit()
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+
+    def clean(self):
+        try:
+            connection.execute("""
+            delete from Step  where UserID=?
+            """, (self.vk_id,))
+
+            connection.commit()
+
+        except sqlite3.OperationalError as error:
+            logging.error("cannot connect " + str(self) +
+                          ' because ' + str(error))
+
+        except sqlite3.IntegrityError as error:
+            logging.error("cannot execute " + str(self) +
+                          ' because ' + str(error))
+

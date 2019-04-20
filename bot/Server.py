@@ -18,6 +18,7 @@ def main():
     module_mas = []
     module_mas.append(addFile("Hello"))
     module_mas.append(addFile("qa"))
+    module_mas.append(addFile("menu"))
 
     vk_session = vk_api.VkApi(token=VK_API_ACCESS_TOKEN)
     vk = vk_session.get_api()
@@ -37,19 +38,38 @@ def main():
             print('Кнопка:', event.obj.payload)
             print()
 
-            mes, key = status(event, module_mas)
-            if(key == None):
+            mes, key, attachment = status(event, module_mas, vk_session)
+            print(attachment)
+            if(key == None and attachment == None):
                 vk.messages.send(
                     peer_id=event.obj.from_id,
                     random_id=get_random_id(),
                     message=mes
                 )
-            else:
+
+            if(key != None and attachment == None):
                 vk.messages.send(
                     peer_id=event.obj.from_id,
                     random_id=get_random_id(),
-                    keyboard=key.get_keyboard(),
-                    message=mes
+                    message=mes,
+                    keyboard = key.get_keyboard()
+                )
+
+            if(key == None and attachment != None):
+                vk.messages.send(
+                    peer_id=event.obj.from_id,
+                    random_id=get_random_id(),
+                    message=mes,
+                    attachment=attachment
+                )
+
+            if (key != None and attachment != None):
+                vk.messages.send(
+                    peer_id=event.obj.from_id,
+                    random_id=get_random_id(),
+                    message=mes,
+                    attachment=attachment,
+                keyboard = key.get_keyboard()
                 )
 
         elif event.type == VkBotEventType.MESSAGE_REPLY:
@@ -60,6 +80,7 @@ def main():
             print(event.obj.peer_id)
 
             print('Текст:', event.obj.text)
+            print('Прикреплено', event.obj.attachment)
             print()
 
         elif event.type == VkBotEventType.MESSAGE_TYPING_STATE:
@@ -88,7 +109,7 @@ def main():
             print(event.type)
             print()
 
-def status(event, module_mas):
+def status(event, module_mas, vk_session):
     if(event.obj.payload != None):
         print("Есть ответ от кнопки")
         js = json.loads(event.obj.payload)
@@ -96,7 +117,7 @@ def status(event, module_mas):
         #Исполняемая кнопка
         if(js["active"] == 1):
             print(js["module"]) #Debug
-            return module_mas[js["module"]].Request(js['step'], event, js["module"])
+            return module_mas[js["module"]].Request(js['step'], event, js["module"], vk_session)
         if(js["active"] == 2):
             return menu(module_mas)
     else:
@@ -113,7 +134,7 @@ def menu(module_mas):
             keyboard.add_line()
         i+=1
     print("Клавиатура создана")
-    return "Привет, выбери вариант", keyboard
+    return "Привет, выбери вариант", keyboard, None
 
 def addFile(name):
     print(sys.path)

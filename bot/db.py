@@ -31,6 +31,7 @@ class Problem:
                 """, (current_id.lastrowid, tag.strip()))
 
             connection.commit()
+            logging.info("Problem %s created" % self)
 
         except sqlite3.OperationalError as error:
             logging.error("cannot connect " + str(self) +
@@ -89,6 +90,7 @@ class User:
                 .execute("""select last_insert_rowid()""").lastrowid
 
             connection.commit()
+            logging.info("user %s created" % self)
 
         except sqlite3.OperationalError as error:
             logging.error("cannot connect " + str(self) +
@@ -156,6 +158,7 @@ class Document:
             self.surname = self.surname
 
             connection.commit()
+            logging.info("Document %s created" % self)
 
         except sqlite3.OperationalError as error:
             logging.error("cannot connect " + str(self) +
@@ -165,8 +168,9 @@ class Document:
                           ' because ' + str(error))
 
     def __str__(self) -> str:
-        return "Document(%s, %s, %s, %s)" % (self.surname, self.name,
-                                             self.parent_name, self.group)
+        return "Document(%i, %s, %s, %s, %s)" % (self.id, self.surname,
+                                                 self.name, self.parent_name,
+                                                 self.group)
 
     def delete(self):
         if self.id is None:
@@ -178,6 +182,8 @@ class Document:
             """, (self.id,))
 
             connection.commit()
+
+            logging.info("Document %s delete" % self)
 
         except sqlite3.OperationalError as error:
             logging.error("cannot connect " + str(self) +

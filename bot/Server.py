@@ -38,13 +38,19 @@ def main():
             print()
 
             mes, key = status(event, module_mas)
-            vk.messages.send(
-                peer_id=event.obj.from_id,
-                random_id=get_random_id(),
-                #keyboard=keyboard.get_keyboard(),
-                keyboard=key.get_keyboard(),
-                message=mes
-            )
+            if(key == None):
+                vk.messages.send(
+                    peer_id=event.obj.from_id,
+                    random_id=get_random_id(),
+                    message=mes
+                )
+            else:
+                vk.messages.send(
+                    peer_id=event.obj.from_id,
+                    random_id=get_random_id(),
+                    keyboard=key.get_keyboard(),
+                    message=mes
+                )
 
         elif event.type == VkBotEventType.MESSAGE_REPLY:
             print('Новое сообщение:')
@@ -87,23 +93,27 @@ def status(event, module_mas):
         print("Есть ответ от кнопки")
         js = json.loads(event.obj.payload)
         print(js)
+        #Исполняемая кнопка
         if(js["active"] == 1):
-            print(js["module"])
+            print(js["module"]) #Debug
             return module_mas[js["module"]].Request(js['step'], event, js["module"])
-        else:
-            print("Не эктив")
+        if(js["active"] == 2):
+            return menu(module_mas)
     else:
         print("Кнопка не нажата")
-        return hello(module_mas)
+        return menu(module_mas)
 
-def hello(module_mas):
+def menu(module_mas):
     keyboard = VkKeyboard(one_time=True)
     print(module_mas)
-    i = 0;
+    i = 0
     for module in module_mas:
         keyboard.add_button(module.MENU_TEXT, color=VkKeyboardColor.DEFAULT, payload=json.dumps({"module":i, "step":0, "active":1}))
+        if(i < len(module_mas) - 1):
+            keyboard.add_line()
         i+=1
-    return 'Привет, выбери вариант', keyboard
+    print("Клавиатура создана")
+    return "Привет, выбери вариант", keyboard
 
 def addFile(name):
     print(sys.path)

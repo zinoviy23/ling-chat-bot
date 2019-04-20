@@ -66,6 +66,10 @@ class Module:
         keyboard.add_button('Будь в курсе', color=VkKeyboardColor.DEFAULT,
                             payload=json.dumps({"module": module_num, "step": 1, "active": 1}))
 
+        keyboard.add_line()
+        keyboard.add_button('Назад', color=VkKeyboardColor.NEGATIVE,
+                            payload=json.dumps({"module": module_num, "step": 1, "active": 2}))
+
         if(step):
             url = 'https://www.hse.ru/pochemuchnik2018/'
             url += add_url(event.obj.text)
